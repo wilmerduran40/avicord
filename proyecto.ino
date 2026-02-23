@@ -37,11 +37,15 @@ pinMode(ledGreen,OUTPUT);
 pinMode(ledRed,OUTPUT);
 }
 
+//Parametros segururos de temperatura,humedad y Nh3
+  float tempMin=36;
+  float tempMax=37.5;
+  float humMax=60;
+  float humMin=40;
+  float nh3Max=20;
+
 void loop() {
-  //Parametros segururos de temperatura,humedad y Nh3
-  float temp=36;
-  float hum=60;
-  //
+
   humedad = dht.readHumidity();
   temperatura = dht.readTemperature();
   
@@ -133,31 +137,39 @@ digitalWrite(spkPin, HIGH);
 
   // 3. Lógica de TEMPERATURA 1 SEMANA
   // Ahora, aunque haya gas, el Arduino llegará a leer esta parte:
-  if(temperatura >= 36 && temperatura < 38 ) {
+  if(temperatura >= tempMin && temperatura < tempMax ) {
     lcd.setCursor(0, 0);
     lcd.print("T: "); lcd.print(temperatura); lcd.print(" TEMP Normal");
     digitalWrite(ledRed,LOW);
+    
 
 
-  } 
-   else if (temperatura >38){
+  } else if (temperatura < tempMin){
+  lcd.setCursor(0,0);
+  lcd.print("T:");
+  lcd.print(temperatura);
+  lcd.print("!TEMP BAJA!");
+  digitalWrite(ledRed,HIGH);
+  delay(a);
+  digitalWrite(ledRed,LOW);
+  
+  
+  }
+   else if (temperatura >tempMax){
     lcd.setCursor(0,0);
     lcd.print("!TEMP ALTA!");
     digitalWrite(ledRed,HIGH);
     delay(a);
     digitalWrite(ledRed,LOW);
-  } else {
-    lcd.setCursor(0, 0);
-    lcd.print("T: "); lcd.print(temperatura); lcd.print("!TEMP BAJA!");
-    digitalWrite(ledRed,HIGH);
-    delay(a);
-    digitalWrite(ledRed,LOW);
-
-
-
-
-
-  }
+  } 
+   
+   //else {
+    //lcd.setCursor(0, 0);
+    //lcd.print("T: "); lcd.print(temperatura); lcd.print("!TEMP BAJA!");
+    //digitalWrite(ledRed,HIGH);
+    //delay(a);
+    //digitalWrite(ledRed,LOW);
+//}
   
   // 4 . Logica de Humedad
   
