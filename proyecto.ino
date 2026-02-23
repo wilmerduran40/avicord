@@ -99,12 +99,7 @@ if (nh3<10){
       }
 
 // 2. Lógica de Humo (Independiente)
-//Lectura Analog (0-1023),Porcentaje (%),Estado del Aire,Acción del Sistema 
-//10%,Limpio,"Sistema en espera. LCD: ""Normal"""
-//11% -30%,Presencia Leve,"Registro en Log. LCD: ""Alerta Leve"""
-//31%  70%,Humo Detectado,"Notificación Whatsapp + LCD: ""¡HUMO!"""
-//71% -100%,Peligro Crítico,Alarma Sonora (Buzzer) + Alerta Urgente
- 
+
   if (humo >= 0 && humo <10) {
     lcd.setCursor(0,2);
     lcd.print("Estado: Aire Limpio ");
