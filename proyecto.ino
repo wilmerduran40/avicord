@@ -1,4 +1,3 @@
-
 #include <DHT.h>
 #include <Wire.h>
 #include <hd44780.h>                       // Librería principal
@@ -47,8 +46,8 @@ digitalWrite(ventilador,HIGH);
 }
 
 //Parametros segururos de temperatura,humedad y Nh3
-  float tempMin=34.5;
-  float tempMax=37.5;
+  float tempMin=35;
+  float tempMax=38;
   float humMax=60;
   float humMin=40;
   float nh3Max=20;
@@ -82,11 +81,11 @@ void loop() {
   } else {
     digitalWrite(ventilador, HIGH); // OFF
   }
-  if (temperatura < 34.5) {
+  if (temperatura <tempMin) {
   temperatura_minima = true; 
 } 
 // Si sube de 36.5, apagamos.
-else if (temperatura > 36.5) {
+else if (temperatura > tempMax) {
   temperatura_minima = false;
 }
   // Bombillo: Solo si hace frío (y no hay alerta de calor)
