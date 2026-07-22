@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Industrial Codornices</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {background-image:url("https://s3.animalia.bio/animals/photos/full/original/shutterstock-2202857131jpg.webp");background-size:cover;background-position:left;background-repeat: no-repeat;font-family: 'Segoe UI', system-ui, sans-serif; }
+    .card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); text-align: center;}.titulo{font-size: 30px;text-align: center;font-weight:bolder }
+    .sensor-card { border-top: 4px solid #e2e8f0; transition: transform 0.2s; text-align:center; }
+    .sensor-card:hover { transform: translateY(-2px); }.panel{color:white;text-align:center;font-size:30px;padding:20px }.box{background-image: url("https://hotmart.com/media/2018/10/BLOG_-Os-x-principais-desafios-da-inovacao-tecnologica-670x4192.png"); background-size:cover;background-position: center;}.botones{display:flex;justify-content:center;}.p{font-size: 20px;font-weight: bolder; color: white;text-align: center;}.value{border: 2px solid black; text-align: center; border-radius:5px;padding:20px;background-color: white;}
+  </style>
+</head>
+<body class="p-4 md:p-6 text-slate-800">
+
+  <div class="max-w-5xl mx-auto">
+    <header class="flex justify-between items-center mb-8 border-b pb-4">
+      <div>
+        <h1 class="titulo">SISTEMA AUTONOMO DE VARIABLES AMBIENTALES EN LA CRÍA DE CODORNICES DEL EMPRENDIMIENTO AVITEC</h1>
+        <p class="p">Monitoreo en Tiempo Real</p>
+      </div>
+      <div id="status-badge" class="px-4 py-2 rounded-full font-semibold text-sm bg-slate-200">
+        Conectando...
+      </div>
+    </header>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Temp -->
+      <div class="value"style="border-top-color: #FDFF76;border-top-width: 10px;">
+        <h3 class="titulo">Temperatura</h3>
+        <div id="temp" class="text-3xl font-extrabold text-slate-900">--°C</div>
+      </div>
+      <!-- Humedad -->
+      <div class="value" style="border-top-color: #3b82f6;border-top-width: 10px;">
+        <h3 class="titulo">Humedad</h3>
+        <div id="hum" class="text-3xl font-extrabold text-slate-900">--%</div>
+      </div>
+      <!-- Amoniaco -->
+      <div class="value" style="border-top-color: #84cc16;">
+        <h3 class="titulo">NH3</h3>
+        <div id="nh3" class="text-3xl font-extrabold text-slate-900">--ppm</div>
+      </div>
+      <!-- Humo -->
+      <div class="value" style="border-top-color: #ef4444;">
+        <h3 class="titulo">Humo</h3>
+        <div id="humo" class="text-3xl font-extrabold text-slate-900">--%</div>
+      </div>
+    </div>
+
+    <div class="box">
+      <h2 class="panel">Panel de Control</h2>
+      <div class="botones">
+        <button onclick="control('ON')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg font-medium transition shadow-sm">Activar Sistema</button>
+        <button onclick="control('OFF')" class="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-5 py-2.5 rounded-lg font-medium transition shadow-sm">Desactivar</button>
+        <button onclick="control('RST_ESP32')" class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-2.5 rounded-lg font-medium transition shadow-sm">Reset ESP32</button>
+        <button onclick="control('RST_MEGA')" class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-2.5 rounded-lg font-medium transition shadow-sm">Reset Mega</button>
+      </div>
+    </div>
+
+    <div id="alerta" class="mb-8"></div>
+
+    <footer class="p">
+      Última actualización: <span id="timestamp">--</span><p class="p">Pagina Desarrollada por  Duran y Blanco(2026)</p>
+    </footer>
+  </div>
+  <script>
+    var ESP32_IP = 'http://192.168.0.231';
+
+    function actualizar() {
+      fetch(ESP32_IP + '/datos')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.temperatura !== undefined) {
+            document.getElementById('temp').innerText = data.temperatura + '°C';
+          }
+          if (data.humedad !== undefined) {
+            document.getElementById('hum').innerText = data.humedad + '%';
+          }
+          if (data.nh3 !== undefined) {
+            document.getElementById('nh3').innerText = data.nh3 + ' ppm';
+          }
+          if (data.humo !== undefined) {
+            document.getElementById('humo').innerText = data.humo + '%';
+          }
+          document.getElementById('alerta').innerHTML =
+            (data.alertaGases === '1' || data.alertaClima === '1')
+              ? '<div style="background:#ef4444;color:white;padding:10px;border-radius:8px;text-align:center;margin:10px 0;">ALERTA: Revisar condiciones ambientales</div>'
+              : '<div style="background:#22c55e;color:white;padding:10px;border-radius:8px;text-align:center;margin:10px 0;">Condiciones normales</div>';
+          document.getElementById('timestamp').innerText = new Date().toLocaleTimeString();
+        })
+        .catch(function() {
+          document.getElementById('timestamp').innerText = 'Sin conexion al ESP32';
+        });
+    }
+
+    function control(cmd) {
+      fetch(ESP32_IP + '/control?cmd=' + cmd).then(function() { actualizar(); });
+    }
+
+    setInterval(actualizar, 3000);
+    actualizar();
+  </script>
+</body>
+</html>
